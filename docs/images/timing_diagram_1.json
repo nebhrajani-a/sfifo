@@ -1,0 +1,15 @@
+{signal: [
+  [ 'Input',
+   {name: 'rst',       wave: '101...............', phase:'1'},
+  {name: 'clk',       wave: 'P................'},
+  {name: 'w_en',      wave: '0.1..0.1.0.......',  phase:'0.5'},
+  {name: 'din',       wave: 'x.222xx=2x.......',  data: ['D0', 'D1', 'D2', 'D3', 'D4'], phase:'0.5'},
+  {name: 'r_en',      wave:'0.10.10.1.01.0...',   phase:'0.5'},],
+   
+   [ 'Output',
+  {name: 'dout',      wave:'x.....2..22.22...',   data: ['D0', 'D1', 'D2', 'D3', 'D4'], phase:'0'},
+  {name: 'full',      wave:'x0...............'},
+  {name: 'empty',     wave:'x1..0............'},
+  {name: 'overflow',  wave:'0................', phase:'0'},
+  {name: 'underflow', wave:'0..10............', phase:'0'},],
+]}

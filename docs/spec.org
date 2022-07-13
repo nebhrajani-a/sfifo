@@ -1,8 +1,84 @@
 #+title: Specification
 #+subtitle: Synchronous FIFO
+#+options: toc:nil
+#+LATEX_HEADER:\usepackage{enumitem}
+#+LATEX_HEADER:\setitemize{noitemsep}
+
 
 * Operation
+The high-level operation of a synchronous FIFO can be modeled by a
+circular buffer as shown:
+
+#+caption: Circular buffer modelling a FIFO.
+#+ATTR_LATEX: :width 250pt
+[[./images/circ_buffer.png]]
+
+Two operations are defined: reading and writing to the FIFO.
+
+Writing input data involves:
+- Copying the input data to the location =write pointer= points to.
+- Incrementing =write pointer=.
+
+Reading data involves:
+- Reading out the data at location =read pointer=.
+- Incrementing =read pointer=.
+
+"Synchronous" refers to the fact that there is a single common
+free-running clock for both reading and writing. When to read and
+write is given by two signals: a read enable and a write enable.
+Our FIFO has 64 addresses and each location stores an 8-bit word (one
+byte).
 
 * Interface
 
+** Description
+#+ATTR_LATEX: :align |l|l|l|l|l|
+|---------------+---------+--------+--------------------------------------+-------------|
+| *Signal Name* | *Width* | *Type* | *Description*                        | *Drive*     |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =rst=         |       1 | Input  | Reset device                         | Active low  |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =clk=         |       1 | Input  | Free running clock                   | Square wave |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =w_en=        |       1 | Input  | Write enable                         | Active high |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =din=         |       8 | Input  | Input for WRITE operation.           | Active high |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =r_en=        |       1 | Input  | Read enable                          | Active high |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =dout=        |       8 | Output | Output of READ operation.            | Active high |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =full=        |       1 | Output | Lowered when FIFO is full.           | Active low  |
+|---------------+---------+--------+--------------------------------------+-------------|
+| =empty=       |       1 | Output | Lowered when FIFO is empty/on reset. | Active low  |
+|---------------+---------+--------+--------------------------------------+-------------|
+
+** Verilog
+#+begin_src verilog
+  module sfifo
+    (rst,
+     clk,
+     w_en,
+     din,
+     r_en,
+     dout,
+     full,
+     empty
+     );
+
+    input          rst;
+    input          clk;
+    input          w_en;
+    input  [7:0]   din;
+    input          r_en;
+    output [7:0]   dout;
+    output         full;
+    output         empty;
+
+  endmodule
+#+end_src
+
+
 * Timing Diagrams
+
+[[./images/timing_diagram_1.pdf]]

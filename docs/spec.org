@@ -90,3 +90,4 @@ byte).
 * Timing Diagrams
 
 [[./images/timing_diagram_1.pdf]]
+[[./images/timing_diagram_2.pdf]]

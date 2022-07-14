@@ -89,5 +89,72 @@ byte).
 
 * Timing Diagrams
 
-[[./images/timing_diagram_1.pdf]]
-[[./images/timing_diagram_2.pdf]]
+#+begin_src json :results output file :file images/timing_diagram_1.pdf :exports results
+{
+  "signal": [
+    [
+      "Input",
+      { "name": "rst", "wave": "101...............", "phase": 1 },
+      { "name": "clk", "wave": "p................" },
+      { "name": "w_en", "wave": "0.1..0.1.0.......", "phase": 0.5 },
+      {
+        "name": "din",
+        "wave": "x.222xx=2x.......",
+        "data": ["D0", "D1", "D2", "D3", "D4"],
+        "phase": 0.5
+      },
+      { "name": "r_en", "wave": "0.10.10.1.01.0...", "phase": 0.5 }
+    ],
+
+    [
+      "Output",
+      {
+        "name": "dout",
+        "wave": "x.....2..22.22...",
+        "data": ["D0", "D1", "D2", "D3", "D4"],
+        "phase": 0
+      },
+      { "name": "full", "wave": "x0..............." },
+      { "name": "empty", "wave": "x1..0............" },
+      { "name": "overflow", "wave": "0................", "phase": 0 },
+      { "name": "underflow", "wave": "0..10............", "phase": 0 }
+    ]
+  ]
+}
+#+end_src
+
+
+#+begin_src json :results output file :file images/timing_diagram_2.pdf :exports results
+  {
+    "signal": [
+      [
+        "Input",
+        { "name": "rst", "wave": "1.................", "phase": 1 },
+        { "name": "clk", "wave": "P................" },
+        { "name": "w_en", "wave": "0.1...0..........", "phase": 0.5 },
+        {
+          "name": "din",
+          "wave": "x.2222x..........",
+          "data": ["D61", "D62", "D63", "D64"],
+          "phase": 0.5
+        },
+        { "name": "r_en", "wave": "0....1..0........", "phase": 0.5 }
+      ],
+
+      [
+        "Output",
+        {
+          "name": "dout",
+          "wave": "x.....222........",
+          "data": ["D61", "D62", "D63"],
+          "phase": 0
+        },
+        { "name": "full", "wave": "0...1............" },
+        { "name": "empty", "wave": "0................" },
+        { "name": "overflow", "wave": "0.....10.........", "phase": 0 },
+        { "name": "underflow", "wave": "0................", "phase": 0 }
+      ]
+    ]
+  }
+
+#+end_src

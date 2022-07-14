@@ -85,7 +85,6 @@ module sfifo_tb;
       $finish;
     end      
   
-`ifdef RTL_DONE  
   sfifo u1_sfifo 
     (.rst(rst),
      .clk(clk),
@@ -98,6 +97,5 @@ module sfifo_tb;
      .overflow(ovfl),
      .underflow(udfl)
     );
-`endif
 
 endmodule // sfifo_tb

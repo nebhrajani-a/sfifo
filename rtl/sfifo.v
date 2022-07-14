@@ -136,7 +136,7 @@ module sfifo
         end
       else
         begin
-          if (fifo_size === 7'd2)
+          if (fifo_size >= 7'd0)
             begin
               empty <= 1'b1;
             end
@@ -144,7 +144,7 @@ module sfifo
             begin
               empty <= 1'b0;
             end
-          if (fifo_size === 7'd62)
+          if (fifo_size == 7'd62)
             begin
               full <= 1'b1;
             end

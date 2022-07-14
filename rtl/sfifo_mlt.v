@@ -39,7 +39,7 @@ sfifo dut
       $dumpvars;
       rst = 1'b0;
       // w_en = 1'b0;
-      // r_en = 1'b0;
+      r_en = 1'b0;
       repeat(4) @ (posedge clk);
       rst = 1'b1;
       w_en = 1'b1;

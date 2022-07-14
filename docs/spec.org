@@ -95,7 +95,7 @@ byte).
     [
       "Input",
       { "name": "rst", "wave": "101...............", "phase": 1 },
-      { "name": "clk", "wave": "p................" },
+      { "name": "clk", "wave": "P................" },
       { "name": "w_en", "wave": "0.1..0.1.0.......", "phase": 0.5 },
       {
         "name": "din",

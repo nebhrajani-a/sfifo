@@ -42,8 +42,8 @@ iverilog ../rtl/sfifo.v ../sim/sfifo_tb.v $1
 
 ./a.out > $testname.log
 
-grep --silent -i Error $testname.log
 set error_count = `grep -i Error $testname.log | wc -l`
+grep --silent -i Error $testname.log
 
 if ($status == 0) then
    echo "Test $testname FAILED with $error_count errors"

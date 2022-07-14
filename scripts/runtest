@@ -1,0 +1,54 @@
+#!/bin/tcsh
+
+if ( $#argv == 1 ) then
+  if (("$1" == "-h") || ("$1" == "--help")) then
+    echo "Usage: runtest [options] [test_name]"
+    echo "       test_name is optional, if not provided runtest runs the default test"
+    echo "       in the simulation environment"
+    echo "       "
+    echo "       Options:"
+    echo "         -h, --help      Print this help message"
+    echo "       "
+    echo "         -c, --clean     Clean run directory of all executables and logs"
+    echo "       "
+    echo "For help, contact vijay.nebhrajani@gmail.com"
+    echo "       "     
+    exit 0
+    
+  else if (("$1" == "-c") || ("$1" == "--clean")) then
+    echo "Cleaning up"
+    ../scripts/cleanup.sh
+    exit 0
+
+  else
+    if ( -e "$1" ) then
+      set testname = `grep -w ^module $1 | gawk '{print $2}'`
+      echo "Running test $testname on sfifo"
+    else
+      echo "No such test $1. Exiting."
+      exit 1
+
+    endif
+  endif
+endif
+   
+if ( ! $?testname ) then
+   set testname = sfifo_tb
+endif
+
+../scripts/cleanup.sh
+
+iverilog ../rtl/sfifo.v ../sim/sfifo_tb.v $1
+
+./a.out > $testname.log
+
+grep --silent -i Error $testname.log
+set error_count = `grep -i Error $testname.log | wc -l`
+
+if ($status == 0) then
+   echo "Test $testname FAILED with $error_count errors"
+else
+   echo "Test $testname PASSED"
+endif
+
+exit

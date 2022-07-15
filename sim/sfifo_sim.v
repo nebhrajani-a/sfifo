@@ -1,4 +1,14 @@
+//------------------------------------------------------------------------------
+// Simulation Environment Top Level for Synchronous FIFO
+//
+// Author: Vijay A. Nebhrajani
+// Email:  vijay.nebhrajani@gmail.com
+// Date:   July 12, 2022
+//------------------------------------------------------------------------------
+
 module sfifo_tb;
+
+  `include "../sim/sfifo_timing_params.v"
 
   reg           rst;
   reg           clk;  
@@ -17,15 +27,12 @@ module sfifo_tb;
   reg           rd_en_d;
   reg           rd_vld;
   reg [7:0]     exp_data;
+  reg           chk_en;
+  reg           chk_en_d;
+  reg           chk_en_d2;
+  integer       wr_count;
+  integer       rd_count;
   
-  //----------------------------------------------------------------------
-  // Timing parameters for the simulation environment
-  //----------------------------------------------------------------------
-  parameter t_clk_low  = 5;
-  parameter t_clk_high = 5;
-  parameter t_s        = 0.2  * (t_clk_low + t_clk_high);
-  parameter t_h        = 0.1  * (t_clk_low + t_clk_high);
-  parameter t_cq       = 0.15 * (t_clk_low + t_clk_high);
   
   //----------------------------------------------------------------------
   // Clock generation
@@ -57,23 +64,8 @@ module sfifo_tb;
       #(t_clk_low + t_clk_high - t_s);
       -> setup_event;
     end
-  
-  //----------------------------------------------------------------------
-  // Writes to FIFO
-  //----------------------------------------------------------------------
-  task wrfifo 
-    (input [7:0] wrdata
-    );
-    begin
-      @ setup_event;
-      w_en = 1'b1;
-      din  = wrdata;
-      @ (posedge clk);
-      # t_h;
-      w_en = 1'b0;
-      din = 8'hXX;
-    end
-  endtask // wrfifo
+
+  `include "../sim/sfifo_simtasks.v"
 
   //----------------------------------------------------------------------
   // Read process
@@ -92,10 +84,13 @@ module sfifo_tb;
       # t_h;
       r_en = 1'b0;
 
-      if (ok_to_read == 1'b1)
+      if (chk_en == 1'b1)
         begin
-          @ setup_event;
-          r_en = 1'b1;
+          if (ok_to_read == 1'b1)
+            begin
+              @ setup_event;
+              r_en = 1'b1;
+            end
         end
     end
 
@@ -105,43 +100,41 @@ module sfifo_tb;
   always @(posedge clk or negedge rst)
     if (rst == 1'b0)
       begin
-        exp_data = 8'h75;
-        rd_en_d <= 1'b0;
-        rd_vld <= 1'b0;
+        exp_data   = 8'h75;
+        rd_en_d   <= 1'b0;
+        rd_vld    <= 1'b0;
+        chk_en_d  <= chk_en;
+        chk_en_d2 <= chk_en_d;
       end
 
     else
       begin
         rd_en_d <= r_en;
         rd_vld  <= rd_en_d;
-        
-        if (rd_vld == 1'b1)
+
+        if (chk_en_d2 == 1'b1)
           begin
-            if (dout !== exp_data)
+            if (rd_vld == 1'b1)
               begin
-                $display("At time %0t: ERROR: Data read error, expected 0x%h received 0x%h\n", 
+                rd_count = rd_count + 1;
+                if (dout !== exp_data)
+                  begin
+                    $display("At time %0t: ERROR: Data read error, expected 0x%h received 0x%h\n", 
                          $time, exp_data, dout);
-                -> error_event;
+                    -> error_event;
+                  end
+                if (exp_data == 8'hFF)
+                  exp_data = 8'h00;
+                else
+                  exp_data = exp_data + 1'b1;
               end
-            exp_data = exp_data + 1'b1;
           end
       end
 
   
-  
-  initial
-    begin
-      $dumpvars;
-      repeat (5) @(posedge clk);
-      wrfifo(8'h75);
-      wrfifo(8'h76);
-      wrfifo(8'h77);
-      repeat (3) @(posedge clk);      
-      wrfifo(8'h78);
-      repeat (5) @(posedge clk);
-      $finish;
-    end      
-  
+  //----------------------------------------------------------------------
+  // Design under test
+  //----------------------------------------------------------------------
   sfifo u1_sfifo 
     (.rst(rst),
      .clk(clk),

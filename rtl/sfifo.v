@@ -94,6 +94,7 @@ module sfifo
                 begin
                   fifo[write_ptr] <= din_reg;
                   write_ptr <= write_ptr + 1'b1;
+                  underflow <= 1'b0;
                   if (r_en_reg == 1'b0)
                     begin
                       fifo_size <= fifo_size + 1'b1;
@@ -103,7 +104,7 @@ module sfifo
                 begin
                   overflow <= 1'b1;
                 end
-            end
+            end // if (w_en_reg == 1'b1)
           // Read logic
           if (r_en_reg == 1'b1)
             begin
@@ -111,6 +112,7 @@ module sfifo
                 begin
                   dout <= fifo[read_ptr];
                   read_ptr <= read_ptr + 1'b1;
+                  overflow <= 1'b0;
                   if (w_en_reg == 1'b0)
                     begin
                       fifo_size <= fifo_size - 1'b1;
@@ -120,7 +122,7 @@ module sfifo
                 begin
                   underflow <= 1'b1;
                 end
-            end
+            end // if (r_en_reg == 1'b1)
         end // else: !if(rst == 1'b0)
     end // always @ (posedge clk or negedge rst)
 
@@ -136,7 +138,8 @@ module sfifo
         end
       else
         begin
-          if (fifo_size <= 7'd2)
+          if (fifo_size <= 7'd2 &&
+              w_en_reg == 1'b0)
             begin
               empty <= 1'b1;
             end

@@ -1,6 +1,24 @@
 #!/bin/tcsh
 
+#------------------------------------------------------------------------------
+# Script to run a single test on a FIFO
+# Assumes that it will be run from a directory such that it finds:
+#   RTL     in ../rtl
+#   simenv  in ../sim
+#   tests   in ../tests
+#   scripts in ../scripts
+# Prints out PASS or FAIL status at the end.
+#
+# Author: Vijay A. Nebhrajani
+# Email:  vijay.nebhrajani@gmail.com
+# Date:   July 15, 2022
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Argument parser
+#------------------------------------------------------------------------------
 if ( $#argv == 1 ) then
+  # Print help
   if (("$1" == "-h") || ("$1" == "--help")) then
     echo "Usage: runtest [options] [test_name]"
     echo "       test_name is optional, if not provided runtest runs the default test"
@@ -14,12 +32,14 @@ if ( $#argv == 1 ) then
     echo "For help, contact vijay.nebhrajani@gmail.com"
     echo "       "     
     exit 0
-    
+
+  # Cleanup - call cleanup.sh to remove executables, logs and dumps
   else if (("$1" == "-c") || ("$1" == "--clean")) then
     echo "Cleaning up"
     ../scripts/cleanup.sh
     exit 0
 
+  # Figure out name of test from test file
   else
     if ( -e "$1" ) then
       set testname = `grep -w ^module $1 | gawk '{print $2}'`
@@ -31,20 +51,27 @@ if ( $#argv == 1 ) then
     endif
   endif
 endif
-   
+
+# There's a default test to be run in case test name isn't explicitly
+# provided. This is mostly when development is ongoing
 if ( ! $?testname ) then
    set testname = sfifo_tb
 endif
 
+# Start afresh every time
 ../scripts/cleanup.sh
 
+# Run iverilog to compile
 iverilog ../rtl/sfifo.v ../sim/sfifo_tb.v $1
 
+# Simulate
 ./a.out > $testname.log
 
+# Check for errors
 set error_count = `grep -i Error $testname.log | wc -l`
 grep --silent -i Error $testname.log
 
+# Report and exit
 if ($status == 0) then
    echo "Test $testname FAILED with $error_count errors"
 else

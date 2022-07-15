@@ -42,7 +42,7 @@ if ( $#argv == 1 ) then
   # Figure out name of test from test file
   else
     if ( -e "$1" ) then
-      set testname = `grep -w ^module $1 | gawk '{print $2}'`
+      set testname = `grep -w ^module $1 | gawk '{print $2}' | gawk -F ";" '{print $1}'`
       echo "Running test $testname on sfifo"
     else
       echo "No such test $1. Exiting."
@@ -55,16 +55,19 @@ endif
 # There's a default test to be run in case test name isn't explicitly
 # provided. This is mostly when development is ongoing
 if ( ! $?testname ) then
-   set testname = sfifo_tb
+   set testname = "sfifo_rw_tst"
 endif
 
 # Start afresh every time
 ../scripts/cleanup.sh
 
 # Run iverilog to compile
-iverilog ../rtl/sfifo.v ../sim/sfifo_tb.v $1
+echo "Compiling with iverilog"
+iverilog ../rtl/sfifo.v ../sim/sfifo_sim.v ../test/$testname.v
 
 # Simulate
+echo "Running simulation"
+echo " "
 ./a.out > $testname.log
 
 # Check for errors
@@ -73,7 +76,7 @@ grep --silent -i Error $testname.log
 
 # Report and exit
 if ($status == 0) then
-   echo "Test $testname FAILED with $error_count errors"
+   echo "Test $testname FAILED with $error_count error(s)"
 else
    echo "Test $testname PASSED"
 endif

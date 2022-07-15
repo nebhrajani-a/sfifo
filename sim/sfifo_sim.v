@@ -103,14 +103,16 @@ module sfifo_tb;
         exp_data   = 8'h75;
         rd_en_d   <= 1'b0;
         rd_vld    <= 1'b0;
-        chk_en_d  <= chk_en;
-        chk_en_d2 <= chk_en_d;
+        chk_en_d  <= 1'b0;
+        chk_en_d2 <= 1'b0;
       end
 
     else
       begin
         rd_en_d <= r_en;
         rd_vld  <= rd_en_d;
+        chk_en_d  <= chk_en;
+        chk_en_d2 <= chk_en_d;
 
         if (chk_en_d2 == 1'b1)
           begin

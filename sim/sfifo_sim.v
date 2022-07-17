@@ -23,13 +23,18 @@ module sfifo_tb;
   
   event         setup_event;
   event         error_event;
+  event         rd_event;
+  
   reg           ok_to_read;
   reg           rd_en_d;
+  reg           empty_d;
   reg           rd_vld;
   reg [7:0]     exp_data;
   reg           chk_en;
   reg           chk_en_d;
   reg           chk_en_d2;
+  reg           checker_was_enabled;
+  
   integer       wr_count;
   integer       rd_count;
   
@@ -105,19 +110,22 @@ module sfifo_tb;
         rd_vld    <= 1'b0;
         chk_en_d  <= 1'b0;
         chk_en_d2 <= 1'b0;
+        empty_d   <= 1'b1;
       end
 
     else
       begin
-        rd_en_d <= r_en;
-        rd_vld  <= rd_en_d;
+        rd_en_d   <= r_en;
+        rd_vld    <= rd_en_d;
         chk_en_d  <= chk_en;
         chk_en_d2 <= chk_en_d;
+        empty_d   <= empty;
 
         if (chk_en_d2 == 1'b1)
           begin
-            if (rd_vld == 1'b1)
+            if ((rd_vld == 1'b1) && (empty_d == 1'b0))
               begin
+                -> rd_event;
                 rd_count = rd_count + 1;
                 if (dout !== exp_data)
                   begin
@@ -125,10 +133,16 @@ module sfifo_tb;
                          $time, exp_data, dout);
                     -> error_event;
                   end
+
                 if (exp_data == 8'hFF)
-                  exp_data = 8'h00;
+                  begin
+                    exp_data = 8'h00;
+                  end
                 else
-                  exp_data = exp_data + 1'b1;
+                  begin
+                    exp_data = exp_data + 1'b1;
+                  end
+
               end
           end
       end

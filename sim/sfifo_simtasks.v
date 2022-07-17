@@ -63,6 +63,10 @@ task fifo_chk_en
    );
   begin
     chk_en = en;
+    if (en == 1'b1)
+      begin
+        checker_was_enabled = 1'b1;
+      end
   end
 endtask // fifo_chk_en
 
@@ -73,10 +77,13 @@ task endsim;
   begin
     if (rd_count !== wr_count)
       begin
-        $display("At time %0t: Error: Written and Read data word count mismatch",
-                 $time);
-        $display("             Data words read = %0d, Data words written = %0d.\n",
-                 rd_count, wr_count);
+        if (checker_was_enabled)
+          begin
+            $display("At time %0t: Error: Written and Read data word count mismatch",
+                     $time);
+            $display("             Data words read = %0d, Data words written = %0d.\n",
+                     rd_count, wr_count);
+          end
       end
     $finish;
   end

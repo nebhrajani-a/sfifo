@@ -23,17 +23,26 @@ module sfifo_tb;
   
   event         setup_event;
   event         error_event;
+  event         wr_event;
   event         rd_event;
   
   reg           ok_to_read;
   reg           rd_en_d;
   reg           empty_d;
   reg           rd_vld;
-  reg [7:0]     exp_data;
   reg           chk_en;
   reg           chk_en_d;
   reg           chk_en_d2;
   reg           checker_was_enabled;
+
+  // Side Channel FIFO
+  reg [7:0]     scf_mem [0:127];
+  reg [6:0]     scf_wptr;
+  reg [6:0]     scf_rptr;
+  reg [7:0]     scf_wcnt;
+  reg           scf_full;
+  reg           scf_empty;
+
   
   integer       wr_count;
   integer       rd_count;
@@ -105,12 +114,12 @@ module sfifo_tb;
   always @(posedge clk or negedge rst)
     if (rst == 1'b0)
       begin
-        exp_data   = 8'h75;
         rd_en_d   <= 1'b0;
         rd_vld    <= 1'b0;
         chk_en_d  <= 1'b0;
         chk_en_d2 <= 1'b0;
         empty_d   <= 1'b1;
+        scf_rptr  <= 7'd0;
       end
 
     else
@@ -127,27 +136,54 @@ module sfifo_tb;
               begin
                 -> rd_event;
                 rd_count = rd_count + 1;
-                if (dout !== exp_data)
+                if (dout !== scf_mem[scf_rptr])
                   begin
                     $display("At time %0t: ERROR: Data read error, expected 0x%h received 0x%h\n", 
-                         $time, exp_data, dout);
+                         $time, scf_mem[scf_rptr], dout);
                     -> error_event;
                   end
 
-                if (exp_data == 8'hFF)
+                if (scf_rptr == 7'h3F)
                   begin
-                    exp_data = 8'h00;
+                    scf_rptr = 7'h00;
                   end
                 else
                   begin
-                    exp_data = exp_data + 1'b1;
+                    scf_rptr = scf_rptr + 1'b1;
                   end
 
               end
           end
       end
 
+  //----------------------------------------------------------------------
+  // Side Channel FIFO
+  //----------------------------------------------------------------------
+  initial
+    begin
+      scf_wptr = 0;
+      scf_rptr = 0;
+      scf_wcnt = 0;
+    end
   
+  always @(posedge clk or negedge rst)
+    if (rst == 1'b0)
+      begin
+        scf_wcnt <= 'd0;
+      end
+    else
+      begin
+        if (w_en == 1'b1)
+          begin
+            scf_wcnt <= scf_wcnt - 1;
+          end
+
+        if (r_en == 1'b1)
+          begin
+            scf_wcnt <= scf_wcnt + 1;
+          end
+      end // else: !if(rst == 1'b0)
+
   //----------------------------------------------------------------------
   // Design under test
   //----------------------------------------------------------------------

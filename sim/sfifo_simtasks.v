@@ -47,6 +47,18 @@ task wrfifo
     w_en = 1'b1;
     din  = wrdata;
     @ (posedge clk);
+
+    scf_mem[scf_wptr] = wrdata;
+    if (scf_wptr == 7'h3F)
+      begin
+        scf_wptr = 7'h0;
+      end
+    else
+      begin
+        scf_wptr = scf_wptr + 1;
+      end
+    
+    -> wr_event;
     wr_count = wr_count + 1;
     # t_h;
     w_en = 1'b0;

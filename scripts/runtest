@@ -65,10 +65,16 @@ endif
 echo "Compiling with iverilog"
 iverilog ../rtl/sfifo.v ../sim/sfifo_sim.v ../test/$testname.v
 
+
 # Simulate
-echo "Running simulation"
-echo " "
-./a.out > $testname.log
+if (-e a.out) then
+    echo "Running simulation"
+    echo " "
+    ./a.out > $testname.log
+else
+    echo "Compilation Failed, Exit."
+    exit 1
+endif
 
 # Check for errors
 set error_count = `grep -i Error $testname.log | wc -l`

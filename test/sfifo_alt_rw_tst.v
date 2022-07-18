@@ -12,15 +12,14 @@ module sfifo_alt_rw_tst;
       // Initialize (reset etc)
       `SFIFO_INIT;
 
-
       // Perform 64 writes
       for (i = 0; i < 64; i++)
         begin
           `SFIFO_WR($random);
           `SFIFO_CHK_EN(`OFF);
-          `DELAY(2);
+          `DELAY(4);
           `SFIFO_CHK_EN(`ON);
-          `DELAY(2);
+          `DELAY(4);
         end
 
       // Delay a bit

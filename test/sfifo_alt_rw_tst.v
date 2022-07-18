@@ -1,7 +1,7 @@
 
 `include "../sim/sfifo_sim.vh"
 
-module sfifo_simul_rw_tst;
+module sfifo_alt_rw_tst;
 
   integer i;
 
@@ -17,12 +17,10 @@ module sfifo_simul_rw_tst;
       for (i = 0; i < 64; i++)
         begin
           `SFIFO_WR($random);
-          if (i == $urandom_range(0, 63))
-            begin
-              // Enable read and check
-              // at some random instant
-              `SFIFO_CHK_EN(`ON);
-            end
+          `SFIFO_CHK_EN(`OFF);
+          `DELAY(2);
+          `SFIFO_CHK_EN(`ON);
+          `DELAY(2);
         end
 
       // Delay a bit

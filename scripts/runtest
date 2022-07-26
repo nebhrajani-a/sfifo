@@ -30,7 +30,7 @@ if ( $#argv == 1 ) then
     echo "         -c, --clean     Clean run directory of all executables and logs"
     echo "       "
     echo "For help, contact vijay.nebhrajani@gmail.com"
-    echo "       "     
+    echo "       "
     exit 0
 
   # Cleanup - call cleanup.sh to remove executables, logs and dumps
@@ -83,8 +83,8 @@ grep --silent -i Error $testname.log
 # Report and exit
 if ($status == 0) then
    echo "Test $testname FAILED with $error_count error(s)"
+   exit 1
 else
    echo "Test $testname PASSED"
+   exit 0
 endif
-
-exit

@@ -1,0 +1,17 @@
+name: default test
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt install iverilog
+      - name: Test default with runtest
+        run: |
+          cd run
+          ../scripts/runtest

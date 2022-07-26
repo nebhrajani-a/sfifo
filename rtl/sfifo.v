@@ -78,14 +78,14 @@ module sfifo
       // Reset logic
       if (rst == 1'b0)
         begin
-          write_ptr <= 'h0;
-          read_ptr  <= 'h0;
-          word_cnt <= 'h0;
-          dout      <= 'h0;
-          overflow  <= 1'b0;
-          underflow <= 1'b0;
-          empty     <= 1'b1;
-          full      <= 1'b0;
+          // write_ptr <= 'h0;
+          // read_ptr  <= 'h0;
+          // word_cnt <= 'h0;
+          // dout      <= 'h0;
+          // overflow  <= 1'b0;
+          // underflow <= 1'b0;
+          // empty     <= 1'b1;
+          // full      <= 1'b0;
         end
       else
         begin

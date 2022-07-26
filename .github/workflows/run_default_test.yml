@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          sudo apt install iverilog tcsh
+          sudo apt-get install iverilog tcsh
       - name: Test default with runtest
         run: |
           cd run

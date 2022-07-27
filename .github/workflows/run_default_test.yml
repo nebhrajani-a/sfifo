@@ -1,4 +1,4 @@
-name: default test
+name: regression test
 
 on: [push]
 
@@ -11,7 +11,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install iverilog tcsh
-      - name: Test default with runtest
+      - name: Run all tests with runtest
         run: |
           cd run
-          ../scripts/runtest
+          for f in $(ls ../test); do ../scripts/runtest ../test/$f; done

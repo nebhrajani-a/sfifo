@@ -1,2 +1,2 @@
 * Synchronous FIFO
-SystemVerilog implementation.
+Verilog implementation.

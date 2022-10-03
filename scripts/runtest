@@ -63,7 +63,7 @@ endif
 
 # Run iverilog to compile
 echo "Compiling with iverilog"
-iverilog ../rtl/sfifo.v ../sim/sfifo_sim.v ../test/$testname.v
+iverilog ../rtl/sfifo.sv ../sim/sfifo_sim.sv ../test/$testname.sv
 
 
 # Simulate

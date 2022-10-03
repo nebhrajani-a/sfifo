@@ -8,10 +8,10 @@
 
 module sfifo_tb;
 
-  `include "../sim/sfifo_timing_params.v"
+  `include "../sim/sfifo_timing_params.sv"
 
   reg           rst;
-  reg           clk;  
+  reg           clk;
   reg           w_en;
   reg [7:0]     din;
   reg           r_en;
@@ -20,12 +20,12 @@ module sfifo_tb;
   wire          empty;
   wire          ovfl;
   wire          udfl;
-  
+
   event         setup_event;
   event         error_event;
   event         wr_event;
   event         rd_event;
-  
+
   reg           ok_to_read;
   reg           rd_en_d;
   reg           empty_d;
@@ -43,11 +43,11 @@ module sfifo_tb;
   reg           scf_full;
   reg           scf_empty;
 
-  
+
   integer       wr_count;
   integer       rd_count;
-  
-  
+
+
   //----------------------------------------------------------------------
   // Clock generation
   //----------------------------------------------------------------------
@@ -79,7 +79,7 @@ module sfifo_tb;
       -> setup_event;
     end
 
-  `include "../sim/sfifo_simtasks.v"
+  `include "../sim/sfifo_simtasks.sv"
 
   //----------------------------------------------------------------------
   // Read process
@@ -94,7 +94,7 @@ module sfifo_tb;
         begin
           ok_to_read = 0;
         end
-      
+
       # t_h;
       r_en = 1'b0;
 
@@ -138,7 +138,7 @@ module sfifo_tb;
                 rd_count = rd_count + 1;
                 if (dout !== scf_mem[scf_rptr])
                   begin
-                    $display("At time %0t: ERROR: Data read error, expected 0x%h received 0x%h\n", 
+                    $display("At time %0t: ERROR: Data read error, expected 0x%h received 0x%h\n",
                          $time, scf_mem[scf_rptr], dout);
                     -> error_event;
                   end
@@ -165,7 +165,7 @@ module sfifo_tb;
       scf_rptr = 0;
       scf_wcnt = 0;
     end
-  
+
   always @(posedge clk or negedge rst)
     if (rst == 1'b0)
       begin
@@ -187,7 +187,7 @@ module sfifo_tb;
   //----------------------------------------------------------------------
   // Design under test
   //----------------------------------------------------------------------
-  sfifo u1_sfifo 
+  sfifo u1_sfifo
     (.rst(rst),
      .clk(clk),
      .w_en(w_en),
